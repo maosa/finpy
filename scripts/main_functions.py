@@ -25,7 +25,6 @@ ti = TechIndicators(key=api_key, output_format='pandas')
 
 import pandas as pd
 import numpy as np
-from datapackage import Package
 import pandas_datareader.data as web
 import datetime
 
@@ -40,7 +39,7 @@ def RMSE(observations, predictions):
 ##########################################################################################
 ##########################################################################################
 
-# Define a function to organise and wrangle Alpha Vantage data
+# Define a function to pull and wrangle Alpha Vantage data
 
 def alpha_wrangle(stock, start, end):
 
@@ -108,7 +107,9 @@ def alpha_wrangle(stock, start, end):
 
     data['ema_100'] = data['adjusted_close'].ewm(span = 100, adjust = False).mean()
 
-#     time.sleep(15)
+    data.drop(labels = ['date'], axis=1, inplace=True)
+
+    data.columns = [stock + '_' + c for c in data.columns]
 
     return data
 
@@ -153,6 +154,8 @@ def get_bb(stock, start, end):
     bb = bb.loc[mask]
 
     bb.drop(labels = ['date'], axis=1, inplace=True)
+
+    bb.columns = [stock + '_' + c for c in bb.columns]
 
     return bb
 
@@ -201,12 +204,14 @@ def get_rsi(stock, start, end):
 
     rsi.sort_index(ascending=False, inplace=True)
 
+    rsi.columns = [stock + '_' + c for c in rsi.columns]
+
     return rsi
 
 ##########################################################################################
 ##########################################################################################
 
-# Get ADX
+# Get ADX from Alpha Vantage
 
 # https://www.investopedia.com/articles/trading/07/adx-trend-indicator.asp
 
@@ -247,12 +252,14 @@ def get_adx(stock, start, end):
 
     adx.sort_index(ascending=False, inplace=True)
 
+    adx.columns = [stock + '_' + c for c in adx.columns]
+
     return adx
 
 ##########################################################################################
 ##########################################################################################
 
-# Get MACD
+# Get MACD from Alpha Vantage
 
 # https://www.investopedia.com/articles/forex/05/macddiverge.asp
 
@@ -290,6 +297,8 @@ def get_macd(stock, start, end):
     macd = macd.loc[mask]
 
     macd.drop(labels = ['MACD_Hist', 'MACD_Signal', 'date'], axis = 1, inplace = True)
+
+    macd.columns = [stock + '_' + c for c in macd.columns]
 
     return macd
 
@@ -329,87 +338,7 @@ def get_bonds(package, freq, start, end):
 ##########################################################################################
 ##########################################################################################
 
-# Get VIX data from datahub.io
 
-def get_vix(start,
-            end,
-            package='https://datahub.io/core/finance-vix/datapackage.json',
-            freq='vix-daily_csv'):
-
-    vix_data = Package(package)
-
-    # Convert to pandas dataframe
-
-    vix_data = pd.DataFrame(vix_data.get_resource(freq).read())
-
-    # Data wrangling
-
-    vix_data.columns = ['date', 'vix_open', 'vix_high', 'vix_low', 'vix_close']
-
-    vix_data['date'] = pd.to_datetime(vix_data['date'], format = '%Y-%m-%d')
-
-    vix_data.index = vix_data['date']
-
-    vix_data['day'] = vix_data.index.day
-
-    vix_data['month'] = vix_data.index.month
-
-    vix_data['year'] = vix_data.index.year
-
-    vix_data = vix_data.loc[vix_data.year >= datetime.datetime.strptime(start, '%Y-%m-%d').date().year]
-
-    vix_data.drop(labels = ['date', 'day', 'month', 'year'], axis = 1, inplace = True)
-
-    return vix_data
 
 ##########################################################################################
 ##########################################################################################
-
-# Get Natural Gas data from datahub.io
-
-def get_nat_gas(start,
-                end,
-                package='https://datahub.io/core/natural-gas/datapackage.json',
-                freq='daily_csv'):
-
-    nat_gas = Package(package)
-
-    # Convert to pandas dataframe
-
-    nat_gas = pd.DataFrame(nat_gas.get_resource(freq).read())
-
-    # Data wrangling
-
-    nat_gas.columns = ['date', 'nat_gas_price']
-
-    nat_gas['date'] = pd.to_datetime(nat_gas['date'], format = '%Y-%m-%d')
-
-    nat_gas.index = nat_gas['date']
-
-#     nat_gas['day'] = nat_gas.index.day
-
-#     nat_gas['month'] = nat_gas.index.month
-
-#     nat_gas['year'] = nat_gas.index.year
-
-    mask = (nat_gas['date'] >= start) & (nat_gas['date'] <= end)
-
-    nat_gas.drop(labels = ['date'], axis = 1, inplace = True)
-
-    nat_gas = nat_gas.loc[mask]
-
-    return nat_gas
-
-##########################################################################################
-##########################################################################################
-
-# Get oil data from Quandl
-# https://www.quandl.com/data/WGEC-World-Bank-Global-Economic-Monitor-GEM-Commodities
-
-def get_oil(start, end):
-
-    oil = quandl.get('NASDAQOMX/NQCICLER', start_date=start, end_date=end)
-
-    oil.columns = [c.replace(' ', '_') for c in oil.columns]
-
-    return oil

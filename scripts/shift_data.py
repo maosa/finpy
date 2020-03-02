@@ -41,6 +41,10 @@ cols_to_drop = ['adjusted_close', 'open', 'high', 'low', 'close', 'date', 'vix_o
 
 data_tmp = stock_data.join(alt_data).drop(labels = cols_to_drop, axis = 1)
 
+# Set prediction period (in days)
+
+pred_period = 30
+
 data_shifted = data_tmp.shift(-pred_period) # KEY STEP!!! MAKE SURE THIS IS CORRECT!!!
 
 del data_tmp
