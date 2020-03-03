@@ -1,3 +1,7 @@
+
+##########################################################################################
+##########################################################################################
+
 # Set up the environment
 
 import sys
@@ -6,53 +10,50 @@ import sys
 
 sys.path.append('/usr/local/lib/python3.7/site-packages/')
 
-# Setup AlphaVantage
-
-from alpha_vantage.timeseries import TimeSeries # https://www.alphavantage.co/documentation/
-from alpha_vantage.techindicators import TechIndicators # https://github.com/RomelTorres/alpha_vantage
-
-api_key = '2HTD0A5HTZ0MZW19'
-
-ts = TimeSeries(key=api_key, output_format='pandas')
-
-ti = TechIndicators(key=api_key, output_format='pandas')
-
-# Import other libraries
-
+import os
 import pandas as pd
-import numpy as np
-from datapackage import Package
-import pandas_datareader.data as web
-import datetime
-from main_functions import *
 
 ##########################################################################################
 ##########################################################################################
 
+# Change into the correct directory
 
+if os.getcwd() != os.path.expanduser('~') + '/finpy/':
+    os.chdir(os.path.expanduser('~') + '/finpy/')
+else:
+    pass
 
-################
-##### SHIFT DATA
-################
+###################
+##### READ THE DATA
+###################
 
-# Create shifted dataset
+data = pd.read_csv('data/filt_data.csv', sep=',', index_col=0)
 
-cols_to_drop = ['adjusted_close', 'open', 'high', 'low', 'close', 'date', 'vix_open', 'vix_high', 'vix_low']
+####################
+##### SHIFT THE DATA
+####################
 
-data_tmp = stock_data.join(alt_data).drop(labels = cols_to_drop, axis = 1)
+# Define the variable of interest
+
+target_stock = 'MSFT'
+
+target = target_stock + '_adjusted_close'
+
+##########################################################################################
 
 # Set prediction period (in days)
 
 pred_period = 30
 
-data_shifted = data_tmp.shift(-pred_period) # KEY STEP!!! MAKE SURE THIS IS CORRECT!!!
+# Create shifted dataset
 
-del data_tmp
+data_shifted = data.shift(-pred_period) # KEY STEP!!! MAKE SURE THIS IS CORRECT!!!
 
-# Add the unshifted adjusted close values
-# i.e. use features from a certain time ago to predict the current price
+data_shifted['price'] = data[target]
 
-data_shifted = data_shifted.join(stock_data.adjusted_close).dropna(axis = 0)
+data_shifted.dropna(axis = 0, inplace=True)
+
+##########################################################################################
 
 # Create the training set
 
@@ -62,9 +63,13 @@ train = data_shifted.iloc[pred_period:, :].sort_index()
 
 test = data_shifted.iloc[:pred_period, :].sort_index()
 
-###############
-##### SAVE DATA
-###############
+print('Training set dimensions:', train.shape)
+
+print('Test set dimensions:', test.shape)
+
+###################
+##### SAVE THE DATA
+###################
 
 train.to_csv('data/train.csv', sep=',', header=True, index=True)
 

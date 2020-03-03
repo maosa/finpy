@@ -21,6 +21,17 @@ ts = TimeSeries(key=api_key, output_format='pandas')
 
 ti = TechIndicators(key=api_key, output_format='pandas')
 
+# Change into the correct directory
+
+import os
+
+if os.getcwd() == os.path.expanduser('~') + '/finpy/scripts':
+    pass
+else:
+    os.chdir(os.path.expanduser('~') + '/finpy/scripts')
+
+print('Current working directory:', os.getcwd())
+
 # Import other libraries
 
 import pandas as pd
@@ -41,6 +52,8 @@ end_date = datetime.datetime.today().date()
 
 ##########################################################################################
 ##########################################################################################
+
+startTime = datetime.datetime.now()
 
 ###############
 ##### FRED DATA
@@ -146,20 +159,20 @@ all_stocks = []
 for s in stocks:
     print('Pulling data for', s)
     stock_tmp = alpha_wrangle(stock=s, start=start_date, end=end_date)
-    time.sleep(5)
+    time.sleep(10)
     # Get data for vairous indicators
     bb = get_bb(stock=s, start=start_date, end=end_date)
-    time.sleep(5)
+    time.sleep(10)
     rsi = get_rsi(stock=s, start=start_date, end=end_date)
-    time.sleep(5)
+    time.sleep(10)
     adx = get_adx(stock=s, start=start_date, end=end_date)
-    time.sleep(5)
+    time.sleep(10)
     macd = get_macd(stock=s, start=start_date, end=end_date)
     # Join everything together
     stock_tmp = stock_tmp.join(bb).join(rsi).join(adx).join(macd)
     # Add to list
     all_stocks.append(stock_tmp)
-    # Pause to prevent AlphaVantage API overload
+    # Pauses are needed to prevent AlphaVantage API overload
     time.sleep(10)
 
 del stock_tmp, bb, rsi, adx, macd
@@ -185,5 +198,9 @@ data = stock_data.join(fred_forex).dropna(axis=0)
 ###################
 
 data.to_csv('../data/all_data.csv', sep=',', header=True, index=True)
+
+endTime = datetime.datetime.now()
+
+print('Time taken to retrieve the data:', endTime - startTime)
 
 #####
