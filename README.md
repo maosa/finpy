@@ -11,7 +11,7 @@
 * feature_engineering.py
 * shift_data.py
 
-After running these in this order, one should have an ML-ready data frame suitable for fitting ML models.
+After running these in this order, one should have an ML-ready data frame suitable for fitting ML models. Note that the *main_functions.py* and *get_data.py* scripts also perform some feature engineering.
 
 
 

@@ -70,6 +70,14 @@ def alpha_wrangle(stock, start, end):
 
     # data.drop(labels = ['dividend_amount', 'split_coeff'], axis = 1, inplace = True)
 
+    # Check dates and reverse if necessary
+    first = data.index[0]
+    last = data.index[data.shape[0] - 1]
+    if first > last:
+        data.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
     data['date'] = data.index
 
     # Subset table based on dates
@@ -137,6 +145,14 @@ def alpha_wrangle(stock, start, end):
 
     data.columns = [stock + '_' + c for c in data.columns]
 
+    # Check dates and reverse if necessary
+    first = data.index[0]
+    last = data.index[data.shape[0] - 1]
+    if first < last:
+        data.sort_index(ascending=False, inplace=True)
+    else:
+        pass
+
     return data
 
 ##########################################################################################
@@ -171,6 +187,26 @@ def get_bb(stock, start, end):
 
     bb.columns = [c.replace(' ', '_').lower() for c in bb.columns]
 
+    # Check dates and reverse if necessary
+
+    first = bb.index[0]
+    last = bb.index[bb.shape[0] - 1]
+
+    if first > last:
+        bb.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    # Exponential moving average and rolling standard deviation
+
+    for band in ['real_middle_band', 'real_lower_band', 'real_upper_band']:
+        bb[band + '_ema_20'] = bb[band].ewm(span = 20, adjust = False).mean()
+        bb[band + '_ema_50'] = bb[band].ewm(span = 50, adjust = False).mean()
+        bb[band + '_ema_100'] = bb[band].ewm(span = 100, adjust = False).mean()
+        bb[band + '_std_20'] = bb[band].rolling(window = 20).std()
+        bb[band + '_std_50'] = bb[band].rolling(window = 50).std()
+        bb[band + '_std_100'] = bb[band].rolling(window = 100).std()
+
     # Subset table based on dates
 
     bb['date'] = bb.index
@@ -182,6 +218,16 @@ def get_bb(stock, start, end):
     bb.drop(labels = ['date'], axis=1, inplace=True)
 
     bb.columns = [stock + '_' + c for c in bb.columns]
+
+    # Check dates and reverse if necessary
+
+    first = bb.index[0]
+    last = bb.index[bb.shape[0] - 1]
+
+    if first < last:
+        bb.sort_index(ascending=False, inplace=True)
+    else:
+        pass
 
     return bb
 
@@ -218,6 +264,24 @@ def get_rsi(stock, start, end):
 
     rsi.columns = [c.replace(' ', '_') for c in rsi.columns]
 
+    # Check dates and reverse if necessary
+
+    first = rsi.index[0]
+    last = rsi.index[rsi.shape[0] - 1]
+
+    if first > last:
+        rsi.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    # Exponential moving average and rolling standard deviation on RSI
+    rsi['RSI_ema_20'] = rsi['RSI'].ewm(span = 20, adjust = False).mean()
+    rsi['RSI_ema_50'] = rsi['RSI'].ewm(span = 50, adjust = False).mean()
+    rsi['RSI_ema_100'] = rsi['RSI'].ewm(span = 100, adjust = False).mean()
+    rsi['RSI_std_20'] = rsi['RSI'].rolling(window = 20).std()
+    rsi['RSI_std_50'] = rsi['RSI'].rolling(window = 50).std()
+    rsi['RSI_std_100'] = rsi['RSI'].rolling(window = 100).std()
+
     # Subset table based on dates
 
     rsi['date'] = rsi.index
@@ -228,9 +292,17 @@ def get_rsi(stock, start, end):
 
     rsi.drop(labels = ['date'], axis=1, inplace=True)
 
-    rsi.sort_index(ascending=False, inplace=True)
-
     rsi.columns = [stock + '_' + c for c in rsi.columns]
+
+    # Check dates and reverse if necessary
+
+    first = rsi.index[0]
+    last = rsi.index[rsi.shape[0] - 1]
+
+    if first < last:
+        rsi.sort_index(ascending=False, inplace=True)
+    else:
+        pass
 
     return rsi
 
@@ -266,6 +338,24 @@ def get_adx(stock, start, end):
 
     adx.columns = [c.replace(' ', '_') for c in adx.columns]
 
+    # Check dates and reverse if necessary
+
+    first = adx.index[0]
+    last = adx.index[adx.shape[0] - 1]
+
+    if first > last:
+        adx.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    # Exponential moving average and rolling standard deviation on ADX
+    adx['ADX_ema_20'] = adx['ADX'].ewm(span = 20, adjust = False).mean()
+    adx['ADX_ema_50'] = adx['ADX'].ewm(span = 50, adjust = False).mean()
+    adx['ADX_ema_100'] = adx['ADX'].ewm(span = 100, adjust = False).mean()
+    adx['ADX_std_20'] = adx['ADX'].rolling(window = 20).std()
+    adx['ADX_std_50'] = adx['ADX'].rolling(window = 50).std()
+    adx['ADX_std_100'] = adx['ADX'].rolling(window = 100).std()
+
     # Subset table based on dates
 
     adx['date'] = adx.index
@@ -276,9 +366,17 @@ def get_adx(stock, start, end):
 
     adx.drop(labels = ['date'], axis=1, inplace=True)
 
-    adx.sort_index(ascending=False, inplace=True)
-
     adx.columns = [stock + '_' + c for c in adx.columns]
+
+    # Check dates and reverse if necessary
+
+    first = adx.index[0]
+    last = adx.index[adx.shape[0] - 1]
+
+    if first < last:
+        adx.sort_index(ascending=False, inplace=True)
+    else:
+        pass
 
     return adx
 
@@ -314,6 +412,24 @@ def get_macd(stock, start, end):
 
     macd.columns = [c.replace(' ', '_') for c in macd.columns]
 
+    # Check dates and reverse if necessary
+
+    first = macd.index[0]
+    last = macd.index[macd.shape[0] - 1]
+
+    if first > last:
+        macd.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    # Exponential moving average and rolling standard deviation on MACD
+    macd['MACD_ema_20'] = macd['MACD'].ewm(span = 20, adjust = False).mean()
+    macd['MACD_ema_50'] = macd['MACD'].ewm(span = 50, adjust = False).mean()
+    macd['MACD_ema_100'] = macd['MACD'].ewm(span = 100, adjust = False).mean()
+    macd['MACD_std_20'] = macd['MACD'].rolling(window = 20).std()
+    macd['MACD_std_50'] = macd['MACD'].rolling(window = 50).std()
+    macd['MACD_std_100'] = macd['MACD'].rolling(window = 100).std()
+
     # Subset table based on dates
 
     macd['date'] = macd.index
@@ -325,6 +441,16 @@ def get_macd(stock, start, end):
     macd.drop(labels = ['MACD_Hist', 'MACD_Signal', 'date'], axis = 1, inplace = True)
 
     macd.columns = [stock + '_' + c for c in macd.columns]
+
+    # Check dates and reverse if necessary
+
+    first = macd.index[0]
+    last = macd.index[macd.shape[0] - 1]
+
+    if first < last:
+        macd.sort_index(ascending=False, inplace=True)
+    else:
+        pass
 
     return macd
 

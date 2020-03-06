@@ -1,3 +1,7 @@
+
+##########################################################################################
+##########################################################################################
+
 # Set up the environment
 
 import sys
@@ -26,11 +30,10 @@ data = pd.read_csv('data/all_data.csv', sep=',', index_col=0)
 
 print('Dataset dimensions:', data.shape)
 
-# Drop columns: split_coefficient, high, low
+# Drop columns: split_coefficient, high, low (careful not to remove the bollinger bands)
 
-data = data[data.columns.drop(list(data.filter(regex='split_coefficient|high|low')))]
-
-print('Dataset dimensions:', data.shape)
+# data = data[data.columns.drop(list(data.filter(regex='split_coefficient|high|low')))]
+# print('Dataset dimensions:', data.shape)
 
 # Create a column representing the yield curve (10YR bond yield - 2YR bond yield)
 
@@ -41,7 +44,7 @@ print('Dataset dimensions:', data.shape)
 # data.describe(include='all')
 
 if all(data.isnull().sum(axis=0) == 0) and all(data.isnull().sum(axis=1) == 0):
-    print('No NaN (or null) values detected')
+    pass
 else:
     print('NaN (or null) values detected! Check the dataset!')
 
@@ -75,9 +78,15 @@ target_stock = 'MSFT'
 
 target = target_stock + '_adjusted_close'
 
-# Get the feature correlations with the variable of interest
+##########################################################################################
 
-rho = 0.7
+# Set the correlation (rho) threshold
+
+rho = 0.8
+
+##########################################################################################
+
+# Get the feature correlations with the variable of interest
 
 corr_target = abs(corr[target])
 

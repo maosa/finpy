@@ -86,12 +86,40 @@ fred = {
 all_fred = []
 
 for f in fred.keys():
-    print('Pulling data for', f)
+    print('Pulling FRED data for', f)
     fred_tmp = web.DataReader(f, 'fred', start_date, end_date)
-    fred_tmp.columns = [fred[f]]
+    fred_tmp.dropna(axis=0, inplace=True)
+
+    # Check dates and reverse if necessary
+    first = fred_tmp.index[0]
+    last = fred_tmp.index[fred_tmp.shape[0] - 1]
+    if first > last:
+        fred_tmp.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    name_tmp = fred[f]
+    fred_tmp.columns = [name_tmp]
+    # Exponential moving average and rolling standard deviation
+    fred_tmp[name_tmp + '_ema_20'] = fred_tmp[name_tmp].ewm(span = 20, adjust = False).mean()
+    fred_tmp[name_tmp + '_ema_50'] = fred_tmp[name_tmp].ewm(span = 50, adjust = False).mean()
+    fred_tmp[name_tmp + '_ema_100'] = fred_tmp[name_tmp].ewm(span = 100, adjust = False).mean()
+    fred_tmp[name_tmp + '_std_20'] = fred_tmp[name_tmp].rolling(window = 20).std()
+    fred_tmp[name_tmp + '_std_50'] = fred_tmp[name_tmp].rolling(window = 50).std()
+    fred_tmp[name_tmp + '_std_100'] = fred_tmp[name_tmp].rolling(window = 100).std()
+
+    # Check dates and reverse if necessary
+    first = fred_tmp.index[0]
+    last = fred_tmp.index[fred_tmp.shape[0] - 1]
+    if first < last:
+        fred_tmp.sort_index(ascending=False, inplace=True)
+    else:
+        pass
+
     all_fred.append(fred_tmp)
 
-del fred_tmp
+
+del fred_tmp, name_tmp, first, last
 
 fred_data = pd.concat(all_fred, axis=1)
 
@@ -129,20 +157,46 @@ forex = [
 all_forex = []
 
 for f in forex:
-    print('Pulling data for', f)
+    print('Pulling FOREX data for', f)
     forex_tmp = web.DataReader(f, 'fred', start_date, end_date)
-    forex_tmp.columns = [f[3:]]
+    forex_tmp.dropna(axis=0, inplace=True)
+
+    # Check dates and reverse if necessary
+    first = forex_tmp.index[0]
+    last = forex_tmp.index[forex_tmp.shape[0] - 1]
+    if first > last:
+        forex_tmp.sort_index(ascending=True, inplace=True)
+    else:
+        pass
+
+    name_tmp = f[3:]
+    forex_tmp.columns = [name_tmp]
+    # Exponential moving average and rolling standard deviation
+    forex_tmp[name_tmp + '_ema_20'] = forex_tmp[name_tmp].ewm(span = 20, adjust = False).mean()
+    forex_tmp[name_tmp + '_ema_50'] = forex_tmp[name_tmp].ewm(span = 50, adjust = False).mean()
+    forex_tmp[name_tmp + '_ema_100'] = forex_tmp[name_tmp].ewm(span = 100, adjust = False).mean()
+    forex_tmp[name_tmp + '_std_20'] = forex_tmp[name_tmp].rolling(window = 20).std()
+    forex_tmp[name_tmp + '_std_50'] = forex_tmp[name_tmp].rolling(window = 50).std()
+    forex_tmp[name_tmp + '_std_100'] = forex_tmp[name_tmp].rolling(window = 100).std()
+
+    # Check dates and reverse if necessary
+    first = forex_tmp.index[0]
+    last = forex_tmp.index[forex_tmp.shape[0] - 1]
+    if first < last:
+        forex_tmp.sort_index(ascending=False, inplace=True)
+    else:
+        pass
+
     all_forex.append(forex_tmp)
 
-del forex_tmp
+
+del forex_tmp, name_tmp
 
 forex_data = pd.concat(all_forex, axis=1)
 
 forex_data.sort_index(ascending=False, inplace=True)
 
-###############
-##### JOIN DATA
-###############
+# Join FRED and FOREX data
 
 fred_forex = fred_data.join(forex_data)
 
