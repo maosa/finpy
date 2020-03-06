@@ -82,6 +82,8 @@ def alpha_wrangle(stock, start, end):
 
     data['daily_range'] = abs(data.high - data.low)
 
+    data['daily_avg'] = (data.high + data.low) / 2
+
     data['relative_returns'] = data['adjusted_close'].pct_change(1)
 
     # Log returns - First the logarithm of the prices is taken and then
@@ -91,13 +93,27 @@ def alpha_wrangle(stock, start, end):
 
 #     data['cumsum_log_returns'] = data['log_returns'].cumsum()
 
-#     # Moving averages
+    # Exponential moving average and rolling standard deviation on log_returns
 
-#     data['sma_20'] = data['adjusted_close'].rolling(window = 20).mean()
+    data['log_returns_ema_20'] = data['log_returns'].ewm(span = 20, adjust = False).mean()
 
-#     data['sma_50'] = data['adjusted_close'].rolling(window = 50).mean()
+    data['log_returns_ema_50'] = data['log_returns'].ewm(span = 50, adjust = False).mean()
 
-#     data['sma_100'] = data['adjusted_close'].rolling(window = 100).mean()
+    data['log_returns_ema_100'] = data['log_returns'].ewm(span = 100, adjust = False).mean()
+
+    data['log_returns_std_20'] = data['log_returns'].rolling(window = 20).std()
+
+    data['log_returns_std_50'] = data['log_returns'].rolling(window = 50).std()
+
+    data['log_returns_std_100'] = data['log_returns'].rolling(window = 100).std()
+
+    # Simple moving averages
+
+    data['sma_20'] = data['adjusted_close'].rolling(window = 20).mean()
+
+    data['sma_50'] = data['adjusted_close'].rolling(window = 50).mean()
+
+    data['sma_100'] = data['adjusted_close'].rolling(window = 100).mean()
 
     # Exponential moving average
 
@@ -106,6 +122,16 @@ def alpha_wrangle(stock, start, end):
     data['ema_50'] = data['adjusted_close'].ewm(span = 50, adjust = False).mean()
 
     data['ema_100'] = data['adjusted_close'].ewm(span = 100, adjust = False).mean()
+
+    # Rolling standard deviation
+
+    data['std_20'] = data['adjusted_close'].rolling(window = 20).std()
+
+    data['std_50'] = data['adjusted_close'].rolling(window = 50).std()
+
+    data['std_100'] = data['adjusted_close'].rolling(window = 100).std()
+
+    # Modify columns
 
     data.drop(labels = ['date'], axis=1, inplace=True)
 

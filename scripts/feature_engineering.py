@@ -1,7 +1,3 @@
-
-##########################################################################################
-##########################################################################################
-
 # Set up the environment
 
 import sys
@@ -14,9 +10,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-##########################################################################################
-##########################################################################################
 
 # Change into the correct directory
 
@@ -76,19 +69,15 @@ corr.drop(labels=nulls, axis=1, inplace=True)
 
 print('Correlation matrix dimensions:', corr.shape)
 
-##########################################################################################
-
 # Define the variable of interest
 
 target_stock = 'MSFT'
 
 target = target_stock + '_adjusted_close'
 
-##########################################################################################
-
 # Get the feature correlations with the variable of interest
 
-rho = 0.3
+rho = 0.7
 
 corr_target = abs(corr[target])
 
@@ -104,21 +93,21 @@ print('Correlation matrix dimensions ( rho >', rho, '):', corr.shape)
 ##### PLOT THE CORRELATIONS
 ###########################
 
-# plt.figure(figsize=(16, 16))
-#
-# ax = sns.heatmap(
-#     corr,
-# #     vmin=-1, vmax=1, center=0,
-#     cmap=sns.diverging_palette(20, 220, n=200),
-#     square=True
-# )
-#
-# ax.set_xticklabels(
-#     ax.get_xticklabels(),
-#     rotation=45,
-#     horizontalalignment='right'
-# );
-#
+plt.figure(figsize=(16, 16))
+
+ax = sns.heatmap(
+    corr,
+#     vmin=-1, vmax=1, center=0,
+    cmap=sns.diverging_palette(20, 220, n=200),
+    square=True
+)
+
+ax.set_xticklabels(
+    ax.get_xticklabels(),
+    rotation=45,
+    horizontalalignment='right'
+);
+
 # plt.show()
 
 #####################
@@ -138,6 +127,8 @@ corr_feats = list(data.columns)
 ###################
 ##### SAVE THE DATA
 ###################
+
+# Save the data
 
 data.to_csv('data/filt_data.csv', sep=',', header=True, index=True)
 
