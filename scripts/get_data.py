@@ -60,27 +60,53 @@ startTime = datetime.datetime.now()
 ###############
 
 fred = {
+    'DGS6MO' : 'six_month_us_bond', # 6-Month Treasury Constant Maturity Rate
+    'DGS1MO' : 'ten_month_us_bond', # 1-Month Treasury Constant Maturity Rate
+    'DGS1' : 'one_yr_us_bond', # 1-Year Treasury Constant Maturity Rate
     'DGS2' : 'two_yr_us_bond',
+    'DGS5' : 'five_yr_us_bond', # 5-Year Treasury Constant Maturity Rate
     'DGS10' : 'ten_yr_us_bond',
+    'DGS20' : 'twenty_yr_us_bond', # 20-Year Treasury Constant Maturity Rate
+    'VXTYN' : 'ten_yr_tr_note_vol_fut', # CBOE 10-Year Treasury Note Volatility Futures
     'DGS30' : 'thirty_yr_us_bond',
+    'T10Y3M' : 'ten_yr_minus_3_month_us_bond',
+
+    'SP500' : 'SP500',
+    'DJIA' : 'DJIA',
+    'NASDAQCOM' : 'NASDAQ',
+    'NIKKEI225' : 'nikkei_225', # Nikkei Stock Average, Nikkei 225
+    'VXVCLS' : 'sp500_3_month_vol', # CBOE S&P 500 3-Month Volatility Index
+    'VXDCLS' : 'djia_vol', # CBOE DJIA Volatility Index
+    'VXNCLS' : 'nsdaq_vol', # CBOE NASDAQ 100 Volatility Index
+    'RVXCLS': 'russel_2k_vol', # CBOE Russell 2000 Volatility Index
+
     'VIXCLS' : 'vix',
     'OVXCLS' : 'oil_etf_vol',
     'GVZCLS' : 'gold_etf_vol',
     'VXFXICLS' : 'china_etf_vol',
-    'VXEEMCLS' : 'emer_markets_etf_vol',
+    'VXEEMCLS' : 'emer_markets_etf_vol', # CBOE Emerging Markets ETF Volatility Index
     'RVXCLS' : 'russel_2k_etf_vol',
     'VXXLECLS' : 'energy_etf_vol',
-    'SP500' : 'SP500',
-    'DJIA' : 'DJIA',
-    'NASDAQCOM' : 'NASDAQ',
-    'DCOILWTICO' : 'crude_oil_texas',
+
     'GOLDAMGBD228NLBM' : 'gold_morning',
     'GOLDPMGBD228NLBM' : 'gold_afternoon',
+
+    'DCOILWTICO' : 'crude_oil_texas',
     'DCOILBRENTEU' : 'crude_oil_brent',
     'DHHNGSP' : 'hh_natural_gas',
+
     'BAMLHYH0A0HYM2TRIV' : 'high_yield_master_II_tri',
     'BAMLCC0A0CMTRIV' : 'corporate_master_tri',
-    'WLEMUINDXD' : 'economic_uncertainty_index'
+    'WLEMUINDXD' : 'economic_uncertainty_index',
+    'DPCREDIT' : 'primary_credit_risk', # Primary Credit Rate
+    'WLEMUINDXD' : 'economic_uncertainty_index', # Equity Market-related Economic Uncertainty Index
+    'WILL5000INDFC' : 'wilshire_5k', # Wilshire 5000 Total Market Full Cap Index
+    'TEDRATE' : 'ted_spread', # TED Spread
+    'DAAA' : 'aaa_corp_bond_yield', # Moody's Seasoned Aaa Corporate Bond Yield
+    'DBAA' : 'baa_corp_bond_yield', # Moody's Seasoned Baa Corporate Bond Yield
+    'BAA10Y' : 'baa_corp_bond_yield_rel',
+    'BAMLH0A0HYM2' : 'high_yield_opt_adj_spread', # ICE BofA US High Yield Index Option-Adjusted Spread
+    'USD3MTD156N' : '3_month_libor' # 3-Month London Interbank Offered Rate (LIBOR), based on U.S. Dollar
 }
 
 all_fred = []
@@ -141,17 +167,17 @@ forex = [
     'DEXINUS', # indian rupee
     'DEXUSAL', # australian dollar
     'DEXSZUS', # swiss franc
-#     'DEXTHUS', # thai baht
-#     'DEXTAUS', # new taiwan dollar
+    'DEXTHUS', # thai baht
+    'DEXTAUS', # new taiwan dollar
     'DEXSFUS', # south african rand
     'DEXHKUS', # hong kong dollar
     'DEXMAUS', # malaysian ringgit
-#     'DEXSDUS', # swidish krona
+    'DEXSDUS', # swidish krona
     'DEXSIUS' # singapore dollar
-#     'DEXNOUS', # norwegian krone
-#     'DEXDNUS', # danish krone
-#     'DEXSLUS', # sri lankan rupee
-#     'DEXUSNZ', # new zeland dollar
+    'DEXNOUS', # norwegian krone
+    'DEXDNUS', # danish krone
+    'DEXSLUS', # sri lankan rupee
+    'DEXUSNZ', # new zeland dollar
 ]
 
 all_forex = []
@@ -206,7 +232,15 @@ fred_forex = fred_data.join(forex_data)
 
 # Get stock data
 
-stocks = ['AMZN', 'MSFT', 'AAPL', 'GOOGL', 'WMT', 'GS', 'JPM']
+stocks = [
+    'AMZN',
+    'MSFT',
+    'AAPL',
+    # 'GOOGL',
+    'WMT',
+    # 'GS',
+    'JPM'
+]
 
 all_stocks = []
 
